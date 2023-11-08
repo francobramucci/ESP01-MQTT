@@ -25,8 +25,8 @@
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-
-#define rx 3
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(2,3);
 
 // Update these with values suitable for your network.
 
@@ -41,9 +41,9 @@ char msg[50];
 int value = 0;
 
 void setup() {
-  pinMode(rx, INPUT);
   pinMode(BUILTIN_LED, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
   Serial.begin(115200);
+  mySerial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
@@ -98,9 +98,9 @@ void reconnect() {
     if (client.connect("ESP8266Client")) {
       Serial.println("connected");
       // Once connected, publish an announcement...
-      client.publish("prueba", "ESP01 CONNECTED");
+      client.publish("miTopicoReact", "ESP01 CONNECTED");
       // ... and resubscribe
-      client.subscribe("prueba");
+      client.subscribe("miTopicoReact");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -112,12 +112,15 @@ void reconnect() {
 }
 
 void loop() {
-  char arr[6];
-  char inByte;
-  if (Serial.available()) {
-    inByte = Serial.read();    
-  }
-  arr[value] = inByte;
+  String incomingString="";
+  boolean stringReady = false;
+
+  // while(mySerial.available()){
+  //   incomingString = mySerial.readString();
+  //   stringReady = true;
+  // }
+
+  const char* casteado = incomingString.c_str();
 
   if (!client.connected()) {
     reconnect();
@@ -130,7 +133,8 @@ void loop() {
     ++value;
     snprintf (msg, 75, "hello world #%ld", value);
     Serial.print("Publish message: ");
-
-    client.publish("prueba", arr);
+    if(stringReady){
+      client.publish("miTopicoReact", casteado);
+    }
   }
 }
