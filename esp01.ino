@@ -98,9 +98,9 @@ void reconnect() {
     if (client.connect("ESP8266Client")) {
       Serial.println("connected");
       // Once connected, publish an announcement...
-      client.publish("miTopicoReact", "ESP01 CONNECTED");
+      client.publish("teclado", "ESP01 CONNECTED");
       // ... and resubscribe
-      client.subscribe("miTopicoReact");
+      client.subscribe("teclado");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -115,10 +115,10 @@ void loop() {
   String incomingString="";
   boolean stringReady = false;
 
-  // while(mySerial.available()){
-  //   incomingString = mySerial.readString();
-  //   stringReady = true;
-  // }
+  while(mySerial.available()){
+    incomingString = mySerial.readString();
+    stringReady = true;
+  }
 
   const char* casteado = incomingString.c_str();
 
@@ -133,8 +133,7 @@ void loop() {
     ++value;
     snprintf (msg, 75, "hello world #%ld", value);
     Serial.print("Publish message: ");
-    if(stringReady){
-      client.publish("miTopicoReact", casteado);
-    }
+    
+    client.publish("teclado", casteado);
   }
 }
