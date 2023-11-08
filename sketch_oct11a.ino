@@ -8,10 +8,6 @@ void setup()
 
 void loop()
 {
-  if(digitalRead(kPinBtn) == HIGH){
-    Serial.write("Hola");
-  }
-  else{
-    Serial.write("Caponga");
-  }
+  Serial.write("Hola");
+  delay(2000);
 }
